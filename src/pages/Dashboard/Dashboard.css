@@ -1,0 +1,158 @@
+/* Layout Base */
+.gov-dashboard-container {
+    display: flex;
+    height: 100vh;
+    width: 100vw;
+    background-color: #f8fafc;
+    overflow: hidden;
+}
+
+/* Official Sidebar Style */
+.gov-sidebar {
+    width: 280px;
+    background-color: #002147; /* Official Navy Blue */
+    color: white;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 4px 0 10px rgba(0,0,0,0.1);
+    z-index: 10;
+}
+
+.gov-user-profile {
+    padding: 40px 20px;
+    text-align: center;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.user-name { font-weight: 800; font-size: 1.1rem; display: block; margin-top: 15px; letter-spacing: 0.5px; }
+.user-id { font-size: 11px; color: #94a3b8; text-transform: uppercase; margin-top: 5px; display: block; }
+
+.gov-nav { flex: 1; padding: 25px 0; }
+
+.gov-nav-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 14px 25px;
+    color: #cbd5e1;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.gov-nav-item:hover, .gov-nav-item.active {
+    background-color: #1e293b;
+    color: #fff;
+    border-left: 5px solid #3b82f6;
+}
+
+.gov-sidebar-footer { padding: 20px; border-top: 1px solid rgba(255,255,255,0.1); }
+
+.security-badge { 
+    font-size: 10px; color: #10b981; margin-bottom: 10px; display: flex; 
+    align-items: center; gap: 5px; text-transform: uppercase; font-weight: bold; 
+}
+
+.logout-btn-official {
+    width: 100%; padding: 10px; background: transparent; border: 1px solid #ef4444;
+    color: #ef4444; border-radius: 6px; cursor: pointer; display: flex; align-items: center;
+    justify-content: center; gap: 8px; font-weight: bold; transition: 0.2s;
+}
+
+.logout-btn-official:hover { background: #ef4444; color: white; }
+
+/* Main Content Area */
+.gov-viewport {
+    flex: 1;
+    padding: 40px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.portal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.portal-header h1 { font-size: 28px; color: #1e293b; font-weight: 800; margin: 0; }
+.portal-header p { color: #64748b; margin: 5px 0 0 0; font-size: 14px; }
+
+.notification-icon { position: relative; cursor: pointer; color: #1e293b; }
+.badge-count { 
+    position: absolute; top: -5px; right: -5px; background: #ef4444; 
+    color: white; font-size: 10px; padding: 2px 6px; border-radius: 10px; 
+}
+
+.alert-banner {
+    background-color: #fffbeb;
+    border: 1px solid #fef3c7;
+    color: #92400e;
+    padding: 15px 25px;
+    border-radius: 8px;
+    font-size: 13px;
+    margin-bottom: 30px;
+    line-height: 1.5;
+}
+
+/* --- THE GRID FIX --- */
+.gov-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 25px;
+    margin-bottom: 35px;
+}
+
+.gov-stat-card {
+    background: white;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.card-label { font-size: 12px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; }
+.card-value { font-size: 32px; font-weight: 900; margin: 12px 0; }
+.card-subtext { font-size: 12px; color: #94a3b8; }
+
+.portal-info-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 25px;
+}
+
+.info-panel {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+}
+
+.panel-header { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid #f1f5f9; padding-bottom: 10px; }
+.panel-header h3 { font-size: 16px; margin: 0; color: #1e293b; font-weight: bold; }
+
+.exam-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-bottom: 1px solid #f8fafc;
+    font-size: 14px;
+}
+
+.diagnostic-box { border-left: 5px solid #6366f1; }
+.diagnostic-box p { font-size: 14px; color: #475569; line-height: 1.6; }
+
+.gov-primary-btn {
+    margin-top: 15px; padding: 10px 20px; background: #002147; color: white;
+    border: none; border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.3s;
+}
+
+.gov-primary-btn:hover { background: #3b82f6; transform: translateY(-2px); }
+
+/* Overlay for Live Exam */
+.exam-fullscreen-overlay {
+    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+    z-index: 1000; background: white;
+}

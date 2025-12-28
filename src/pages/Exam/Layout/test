@@ -1,0 +1,1829 @@
+// // // import React, { useState, useEffect, useMemo } from "react";
+// // // import { useNavigate } from "react-router-dom";
+// // // import { useAppSelector, useAppDispatch } from "../../../hook";
+// // // import { selectOption } from "../../../features/exam/examSlice";
+
+// // // export const SSCExamInterface = () => {
+// // //   const dispatch = useAppDispatch();
+// // //   const navigate = useNavigate();
+// // //   const examState = useAppSelector((state) => state.exam);
+
+// // //   const [activeTab, setActiveTab] = useState("General Awareness");
+// // //   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+
+// // //   // 1. RECOVERY PARSER (The "Physics-Proof" Version)
+// // //   const questions = useMemo(() => {
+// // //     if (!examState?.streamedText) return [];
+
+// // //     const text = examState.streamedText;
+// // //     const startIndex = text.indexOf("[");
+// // //     if (startIndex === -1) return [];
+
+// // //     // Clean markdown and escape backslashes for math/science content
+// // //     const rawText = text
+// // //       .substring(startIndex)
+// // //       .replace(/```json|```/g, "")
+// // //       .replace(/\\/g, "\\\\") // CRITICAL: Escapes backslashes for JSON.parse
+// // //       .replace(/\\\\"/g, '\\"') // Un-escape actual quotes
+// // //       .trim();
+
+// // //     // REGEX: Simplified to find ANY curly brace block
+// // //     const objectRegex = /\{(?:[^{}]|(?:\{[^{}]*\}))*\}/g;
+// // //     const matches = rawText.match(objectRegex);
+
+// // //     if (!matches) return [];
+
+// // //     return matches
+// // //       .map((block) => {
+// // //         try {
+// // //           const parsed = JSON.parse(block);
+
+// // //           // Normalize Options
+// // //           let ops = [];
+// // //           if (Array.isArray(parsed.options)) ops = parsed.options;
+// // //           else if (parsed.options && typeof parsed.options === "object")
+// // //             ops = Object.values(parsed.options);
+// // //           else if (
+// // //             parsed.type === "True/False" ||
+// // //             (parsed.question && !parsed.options)
+// // //           )
+// // //             ops = ["True", "False"];
+
+// // //           return {
+// // //             ...parsed,
+// // //             question: parsed.question || "Loading...",
+// // //             options: ops,
+// // //             type: parsed.type || "MCQ",
+// // //           };
+// // //         } catch (e) {
+// // //           return null;
+// // //         }
+// // //       })
+// // //       .filter(Boolean);
+// // //   }, [examState?.streamedText]);
+
+// // //   // 2. Safety Check for empty state
+// // //   if (!examState)
+// // //     return (
+// // //       <div style={{ padding: "50px", textAlign: "center" }}>
+// // //         Loading Exam State...
+// // //       </div>
+// // //     );
+
+// // //   const { topic, userAnswers, isGenerating } = examState;
+// // //   const currentQuestion = questions[currentQuestionIndex];
+
+// // //   const handleFinalSubmit = () => {
+// // //     navigate("/SubmittedScreen", {
+// // //       state: {
+// // //         total: questions.length,
+// // //         attempted: Object.keys(userAnswers).length,
+// // //         answers: userAnswers,
+// // //         allQuestions: questions,
+// // //       },
+// // //     });
+// // //   };
+
+// // //   const formatTime = (s: number) => {
+// // //     const m = Math.floor(s / 60);
+// // //     const sec = s % 60;
+// // //     return `${m}:${String(sec).padStart(2, "0")}`;
+// // //   };
+
+// // //   return (
+// // //     <div style={containerStyle}>
+// // //       <header style={headerStyle}>
+// // //         <div style={{ fontWeight: "bold" }}>
+// // //           {topic?.toUpperCase() || "EXAM MODE"}
+// // //         </div>
+// // //         <div style={timerBoxStyle}>Time Left: {formatTime(7200)}</div>
+// // //       </header>
+
+// // //       <div style={tabContainerStyle}>
+// // //         {["Reasoning", "General Awareness", "Quant", "English"].map((tab) => (
+// // //           <div
+// // //             key={tab}
+// // //             onClick={() => setActiveTab(tab)}
+// // //             style={{
+// // //               ...tabStyle,
+// // //               borderBottom: activeTab === tab ? "3px solid white" : "none",
+// // //             }}
+// // //           >
+// // //             {tab}
+// // //           </div>
+// // //         ))}
+// // //       </div>
+
+// // //       <div style={{ display: "flex", flex: 1, overflow: "hidden" }}>
+// // //         <div style={leftPanelStyle}>
+// // //           <div style={{ padding: "30px", overflowY: "auto", flex: 1 }}>
+// // //             {questions.length > 0 && currentQuestion ? (
+// // //               <>
+// // //                 <div style={qNumberStyle}>
+// // //                   Question {currentQuestionIndex + 1} of {questions.length}
+// // //                 </div>
+
+// // //                 {currentQuestion.passage_text && (
+// // //                   <div style={passageContainerStyle}>
+// // //                     {currentQuestion.passage_text}
+// // //                   </div>
+// // //                 )}
+
+// // //                 {currentQuestion.assertion && (
+// // //                   <div style={assertionBoxStyle}>
+// // //                     <p>
+// // //                       <strong>Assertion (A):</strong>{" "}
+// // //                       {currentQuestion.assertion}
+// // //                     </p>
+// // //                     <p>
+// // //                       <strong>Reason (R):</strong> {currentQuestion.reason}
+// // //                     </p>
+// // //                   </div>
+// // //                 )}
+
+// // //                 <p
+// // //                   style={{
+// // //                     fontSize: "20px",
+// // //                     fontWeight: "500",
+// // //                     margin: "20px 0",
+// // //                     color: "#1e293b",
+// // //                   }}
+// // //                 >
+// // //                   {currentQuestion.question}
+// // //                 </p>
+
+// // //                 <div
+// // //                   style={{
+// // //                     display: "flex",
+// // //                     flexDirection: "column",
+// // //                     gap: "12px",
+// // //                   }}
+// // //                 >
+// // //                   {currentQuestion.options?.map((opt: string, i: number) => (
+// // //                     <label key={i} style={optionStyle}>
+// // //                       <input
+// // //                         type="radio"
+// // //                         name={`q-${currentQuestionIndex}`}
+// // //                         checked={userAnswers[currentQuestionIndex] === opt}
+// // //                         onChange={() =>
+// // //                           dispatch(
+// // //                             selectOption({
+// // //                               index: currentQuestionIndex,
+// // //                               answer: opt,
+// // //                             })
+// // //                           )
+// // //                         }
+// // //                         style={{ marginRight: "10px" }}
+// // //                       />
+// // //                       {opt}
+// // //                     </label>
+// // //                   ))}
+// // //                 </div>
+// // //               </>
+// // //             ) : (
+// // //               <div style={{ textAlign: "center", marginTop: "100px" }}>
+// // //                 <div className="spinner" style={spinnerStyle}></div>
+// // //                 <p style={{ marginTop: "20px", color: "#64748b" }}>
+// // //                   AI is generating questions... Please wait.
+// // //                 </p>
+// // //               </div>
+// // //             )}
+// // //           </div>
+
+// // //           <footer style={footerStyle}>
+// // //             <button
+// // //               style={btnStyle}
+// // //               onClick={() =>
+// // //                 setCurrentQuestionIndex(Math.max(0, currentQuestionIndex - 1))
+// // //               }
+// // //             >
+// // //               Previous
+// // //             </button>
+// // //             <button
+// // //               style={{
+// // //                 ...btnStyle,
+// // //                 backgroundColor: "#10b981",
+// // //                 color: "white",
+// // //               }}
+// // //               onClick={() =>
+// // //                 setCurrentQuestionIndex(
+// // //                   Math.min(questions.length - 1, currentQuestionIndex + 1)
+// // //                 )
+// // //               }
+// // //             >
+// // //               Save & Next
+// // //             </button>
+// // //           </footer>
+// // //         </div>
+
+// // //         <aside style={sidebarStyle}>
+// // //           <div
+// // //             style={{
+// // //               padding: "20px",
+// // //               fontWeight: "bold",
+// // //               borderBottom: "1px solid #cbd5e1",
+// // //             }}
+// // //           >
+// // //             Question Palette
+// // //           </div>
+// // //           <div
+// // //             style={{
+// // //               display: "grid",
+// // //               gridTemplateColumns: "repeat(4, 1fr)",
+// // //               gap: "8px",
+// // //               padding: "15px",
+// // //               overflowY: "auto",
+// // //             }}
+// // //           >
+// // //             {questions.map((_, i) => (
+// // //               <div
+// // //                 key={i}
+// // //                 onClick={() => setCurrentQuestionIndex(i)}
+// // //                 style={{
+// // //                   height: "35px",
+// // //                   display: "flex",
+// // //                   alignItems: "center",
+// // //                   justifyContent: "center",
+// // //                   borderRadius: "4px",
+// // //                   background:
+// // //                     i === currentQuestionIndex
+// // //                       ? "#286090"
+// // //                       : userAnswers[i]
+// // //                       ? "#2d8a2d"
+// // //                       : "#94a3b8",
+// // //                   color: "white",
+// // //                   cursor: "pointer",
+// // //                   fontSize: "14px",
+// // //                 }}
+// // //               >
+// // //                 {i + 1}
+// // //               </div>
+// // //             ))}
+// // //           </div>
+// // //           <div style={{ padding: "20px", marginTop: "auto" }}>
+// // //             <button onClick={handleFinalSubmit} style={submitBtnStyle}>
+// // //               SUBMIT TEST
+// // //             </button>
+// // //           </div>
+// // //         </aside>
+// // //       </div>
+// // //     </div>
+// // //   );
+// // // };
+
+// // // // --- STYLES ---
+// // // const containerStyle: React.CSSProperties = {
+// // //   display: "flex",
+// // //   flexDirection: "column",
+// // //   height: "100vh",
+// // //   width: "100vw",
+// // //   position: "fixed",
+// // //   top: 0,
+// // //   left: 0,
+// // //   backgroundColor: "#fff",
+// // //   fontFamily: "sans-serif",
+// // // };
+// // // const headerStyle: React.CSSProperties = {
+// // //   display: "flex",
+// // //   justifyContent: "space-between",
+// // //   alignItems: "center",
+// // //   color: "white",
+// // //   padding: "0 20px",
+// // //   height: "50px",
+// // //   backgroundColor: "#1e40af",
+// // // };
+// // // const timerBoxStyle: React.CSSProperties = {
+// // //   background: "#000",
+// // //   color: "#22c55e",
+// // //   padding: "5px 15px",
+// // //   borderRadius: "4px",
+// // //   fontFamily: "monospace",
+// // //   fontSize: "18px",
+// // // };
+// // // const tabContainerStyle: React.CSSProperties = {
+// // //   display: "flex",
+// // //   background: "#3b82f6",
+// // //   color: "white",
+// // // };
+// // // const tabStyle: React.CSSProperties = {
+// // //   padding: "12px 20px",
+// // //   fontSize: "14px",
+// // //   fontWeight: "600",
+// // //   cursor: "pointer",
+// // // };
+// // // const leftPanelStyle: React.CSSProperties = {
+// // //   flex: 1,
+// // //   display: "flex",
+// // //   flexDirection: "column",
+// // //   borderRight: "1px solid #cbd5e1",
+// // // };
+// // // const footerStyle: React.CSSProperties = {
+// // //   padding: "15px 30px",
+// // //   borderTop: "1px solid #cbd5e1",
+// // //   display: "flex",
+// // //   justifyContent: "space-between",
+// // //   backgroundColor: "#f8fafc",
+// // // };
+// // // const btnStyle = {
+// // //   padding: "10px 25px",
+// // //   borderRadius: "6px",
+// // //   border: "1px solid #cbd5e1",
+// // //   cursor: "pointer",
+// // //   fontWeight: "600",
+// // // };
+// // // const sidebarStyle: React.CSSProperties = {
+// // //   width: "280px",
+// // //   backgroundColor: "#f1f5f9",
+// // //   display: "flex",
+// // //   flexDirection: "column",
+// // // };
+// // // const submitBtnStyle = {
+// // //   width: "100%",
+// // //   backgroundColor: "#ef4444",
+// // //   color: "white",
+// // //   padding: "12px",
+// // //   borderRadius: "6px",
+// // //   border: "none",
+// // //   fontWeight: "bold",
+// // //   cursor: "pointer",
+// // // };
+// // // const optionStyle = {
+// // //   padding: "15px",
+// // //   border: "1px solid #e2e8f0",
+// // //   borderRadius: "8px",
+// // //   cursor: "pointer",
+// // //   display: "flex",
+// // //   alignItems: "center",
+// // // };
+// // // const passageContainerStyle = {
+// // //   background: "#f0f9ff",
+// // //   padding: "20px",
+// // //   borderRadius: "8px",
+// // //   borderLeft: "4px solid #0284c7",
+// // //   marginBottom: "20px",
+// // //   fontStyle: "italic",
+// // // };
+// // // const assertionBoxStyle = {
+// // //   background: "#fff7ed",
+// // //   border: "1px solid #ffedd5",
+// // //   padding: "15px",
+// // //   borderRadius: "8px",
+// // //   marginBottom: "20px",
+// // //   color: "#9a3412",
+// // // };
+// // // const qNumberStyle = {
+// // //   color: "#64748b",
+// // //   fontWeight: "bold",
+// // //   marginBottom: "10px",
+// // //   textTransform: "uppercase",
+// // //   fontSize: "12px",
+// // // };
+// // // const spinnerStyle = {
+// // //   width: "40px",
+// // //   height: "40px",
+// // //   border: "4px solid #f3f3f3",
+// // //   borderTop: "4px solid #3b82f6",
+// // //   borderRadius: "50%",
+// // //   margin: "0 auto",
+
+// // import React, { useState, useEffect, useMemo } from "react";
+// // import { useNavigate } from "react-router-dom";
+// // import { useAppSelector, useAppDispatch } from "../../../hook";
+// // import { selectOption } from "../../../features/exam/examSlice";
+// // import axios from "axios";
+// // export const SSCExamInterface = () => {
+// //   const dispatch = useAppDispatch();
+// //   const navigate = useNavigate();
+// //   const examState = useAppSelector((state) => state.exam);
+
+// //   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+// //   const [activeTab, setActiveTab] = useState("General Awareness");
+// //   const [markedForReview, setMarkedForReview] = useState<number[]>([]);
+// //   const [visitedQuestions, setVisitedQuestions] = useState<number[]>([]);
+// //   // 1. MASTER PARSER
+// //   const questions = useMemo(() => {
+// //     if (!examState?.streamedText) return [];
+// //     const text = examState.streamedText;
+// //     const startIndex = text.indexOf("[");
+// //     if (startIndex === -1) return [];
+
+// //     const rawText = text
+// //       .substring(startIndex)
+// //       .replace(/```json|```/g, "")
+// //       .replace(/\\/g, "\\\\")
+// //       .replace(/\\\\"/g, '\\"')
+// //       .trim();
+
+// //     const objectRegex = /\{(?:[^{}]|(?:\{[^{}]*\}))*\}/g;
+// //     const matches = rawText.match(objectRegex);
+// //     if (!matches) return [];
+
+// //     return matches
+// //       .map((block) => {
+// //         try {
+// //           const parsed = JSON.parse(block);
+// //           let ops = Array.isArray(parsed.options)
+// //             ? parsed.options
+// //             : parsed.options
+// //             ? Object.values(parsed.options)
+// //             : parsed.type === "True/False"
+// //             ? ["True", "False"]
+// //             : [];
+
+// //           return {
+// //             ...parsed,
+// //             question: parsed.question || "Loading...",
+// //             options: ops,
+// //           };
+// //         } catch (e) {
+// //           return null;
+// //         }
+// //       })
+// //       .filter(Boolean);
+// //   }, [examState?.streamedText]);
+
+// //   // 2. DYNAMIC TABS
+// //   const dynamicTabs = useMemo(() => {
+// //     const topicStr = examState?.topic || "";
+// //     const isAnalysis =
+// //       topicStr.toLowerCase().includes("http") ||
+// //       topicStr.toLowerCase().includes(".pdf");
+// //     if (isAnalysis) return ["General Content"];
+
+// //     if (topicStr.includes(":")) {
+// //       return topicStr
+// //         .split(":")[1]
+// //         .split(",")
+// //         .map((s) => s.trim());
+// //     }
+// //     return [
+// //       "General Intelligence",
+// //       "General Awareness",
+// //       "Quantitative Aptitude",
+// //       "English",
+// //     ];
+// //   }, [examState?.topic]);
+
+// //   // 3. FILTERED QUESTIONS
+// //   // const filteredQuestions = useMemo(() => {
+// //   //   if (dynamicTabs.length <= 1) return questions;
+// //   //   return questions.filter((q) => {
+// //   //     const qTopic = (q.topic || q.subject || "").toLowerCase();
+// //   //     const currentTab = activeTab.toLowerCase();
+// //   //     const qText = q.question.toLowerCase();
+// //   //     if (qTopic.includes(currentTab)) return true;
+// //   //     if (currentTab.includes("arithmetic") || currentTab.includes("math")) {
+// //   //       return (
+// //   //         qText.includes("calculate") ||
+// //   //         qText.includes("solve") ||
+// //   //         /\d+/.test(qText)
+// //   //       );
+// //   //     }
+// //   //     if (currentTab.includes("science") || currentTab.includes("gk")) {
+// //   //       return !qText.includes("solve") && !qText.includes("formula");
+// //   //     }
+// //   //     return false;
+// //   //   });
+// //   // }, [questions, activeTab, dynamicTabs]);
+// //   const filteredQuestions = useMemo(() => {
+// //     if (dynamicTabs.length <= 1) return questions;
+
+// //     return questions.filter((q) => {
+// //       const qTopic = (q.topic || q.subject || "").toLowerCase();
+// //       const currentTab = activeTab.toLowerCase();
+// //       const qText = q.question.toLowerCase();
+
+// //       // 1. Direct Topic Match (High Priority)
+// //       if (qTopic.includes(currentTab)) return true;
+
+// //       // 2. Banking Awareness Keywords
+// //       if (currentTab.includes("banking") || currentTab.includes("awareness")) {
+// //         return (
+// //           qText.includes("bank") ||
+// //           qText.includes("rbi") ||
+// //           qText.includes("loan") ||
+// //           qText.includes("interest") ||
+// //           qText.includes("policy") ||
+// //           qTopic.includes("finance")
+// //         );
+// //       }
+
+// //       // 3. Data Interpretation / Quantitative Keywords
+// //       if (
+// //         currentTab.includes("data") ||
+// //         currentTab.includes("interpretation") ||
+// //         currentTab.includes("quant")
+// //       ) {
+// //         return (
+// //           qText.includes("graph") ||
+// //           qText.includes("table") ||
+// //           qText.includes("chart") ||
+// //           qText.includes("percentage") ||
+// //           qText.includes("ratio") ||
+// //           /\d+%/.test(qText) // Matches percentages like 20%
+// //         );
+// //       }
+
+// //       // 4. Logical Reasoning Keywords
+// //       if (currentTab.includes("reasoning") || currentTab.includes("logical")) {
+// //         return (
+// //           qText.includes("arrangement") ||
+// //           qText.includes("blood relation") ||
+// //           qText.includes("coding") ||
+// //           qText.includes("syllogism")
+// //         );
+// //       }
+
+// //       return false;
+// //     });
+// //   }, [questions, activeTab, dynamicTabs]);
+
+// //   // 4. SYNC CHECKS (Safe to access now)
+// //   if (!examState) return null;
+// //   const { topic, userAnswers } = examState;
+
+// //   const currentQuestion = filteredQuestions[currentQuestionIndex];
+
+// //   const masterIndex = useMemo(() => {
+// //     if (!currentQuestion) return -1;
+// //     return questions.findIndex((q) => q.question === currentQuestion.question);
+// //   }, [currentQuestion, questions]);
+
+// //   // EFFECT: Track "Visited" status whenever the question changes
+// //   useEffect(() => {
+// //     if (masterIndex !== -1 && !visitedQuestions.includes(masterIndex)) {
+// //       setVisitedQuestions((prev) => [...prev, masterIndex]);
+// //     }
+// //   }, [masterIndex]);
+
+// //   // 5. EFFECTS & HANDLERS
+// //   useEffect(() => {
+// //     if (dynamicTabs.length > 0 && !dynamicTabs.includes(activeTab)) {
+// //       setActiveTab(dynamicTabs[0]);
+// //     }
+// //   }, [dynamicTabs, activeTab]);
+
+// //   const toggleMarkForReview = () => {
+// //     if (masterIndex === -1) return;
+// //     setMarkedForReview((prev) =>
+// //       prev.includes(masterIndex)
+// //         ? prev.filter((i) => i !== masterIndex)
+// //         : [...prev, masterIndex]
+// //     );
+// //   };
+
+// //   const handleFinalSubmit = async () => {
+// //     console.log("🚀 [Frontend] Starting handleFinalSubmit process...");
+
+// //     // Helper to clean strings for perfect comparison
+// //     // Removes "A) ", "1. ", extra spaces, and converts to lowercase
+// //     const clean = (str: any) =>
+// //       String(str || "")
+// //         .replace(/^[A-Z]\)\s*/i, "") // Removes "A) " prefix
+// //         .replace(/^\d+\.\s*/i, "") // Removes "1. " prefix
+// //         .trim()
+// //         .toLowerCase();
+
+// //     let correctCount = 0;
+
+// //     // 1. Calculations - Iterate through the master questions array
+// //     questions.forEach((q, index) => {
+// //       const uAns = userAnswers[index];
+// //       const cAns = q.answer;
+
+// //       if (uAns) {
+// //         const isCorrect = clean(uAns) === clean(cAns);
+// //         if (isCorrect) {
+// //           correctCount++;
+// //         }
+// //         // Debugging each question to see why it passes/fails in the console
+// //         console.log(
+// //           `Q${index + 1} Comparison: User[${clean(uAns)}] vs Correct[${clean(
+// //             cAns
+// //           )}] -> Match: ${isCorrect}`
+// //         );
+// //       }
+// //     });
+
+// //     const totalQuestionsGenerated = questions.length;
+// //     const attemptedCount = Object.keys(userAnswers).length;
+// //     const wrongCount = attemptedCount - correctCount;
+
+// //     // SSC Scoring Logic: +2 for Correct, -0.5 for Wrong
+// //     const finalScore = correctCount * 2 - wrongCount * 0.5;
+// //     const accuracyVal =
+// //       attemptedCount > 0 ? (correctCount / attemptedCount) * 100 : 0;
+
+// //     // 2. Prepare the Payload
+// //     const payload = {
+// //       user_id: "Amita",
+// //       topic: topic || "SSC Mock Test",
+// //       total_questions: totalQuestionsGenerated,
+// //       attempted: attemptedCount,
+// //       correct: correctCount,
+// //       wrong: wrongCount,
+// //       score: parseFloat(finalScore.toFixed(2)),
+// //       accuracy: parseFloat(accuracyVal.toFixed(2)),
+// //       time_spent: initialMinutes * 60 - timeLeft,
+// //       sectional_breakdown: {
+// //         arithmetic: correctCount, // Refine this later based on q.subject
+// //         gk: 0,
+// //         reasoning: 0,
+// //         english: 0,
+// //       },
+// //     };
+
+// //     console.log("📤 [Frontend] Final Stats Object:", payload);
+
+// //     try {
+// //       // 3. Send to Backend
+// //       const response = await axios.post(
+// //         "http://localhost:8000/api/stats/save-result",
+// //         payload
+// //       );
+
+// //       console.log("✅ [Backend] Response:", response.data);
+
+// //       // 4. Navigate to SubmittedScreen
+// //       // IMPORTANT: Check that SubmittedScreen uses 'score' and 'total_questions' keys
+// //       navigate("/SubmittedScreen", {
+// //         state: {
+// //           ...payload,
+// //           allQuestions: questions,
+// //           userAnswers: userAnswers,
+// //         },
+// //       });
+// //     } catch (error) {
+// //       console.error(
+// //         "❌ [API Error] Saving failed, navigating to fallback:",
+// //         error
+// //       );
+// //       navigate("/SubmittedScreen", {
+// //         state: {
+// //           ...payload,
+// //           allQuestions: questions,
+// //           userAnswers: userAnswers,
+// //         },
+// //       });
+// //     }
+// //   };
+// //   const colors = {
+// //     topHeader: "#286090",
+// //     greenAns: "#2d8a2d",
+// //     redNotAns: "#c9302c",
+// //     purpleMarked: "#7e57c2",
+// //     silverNotVisited: "#fff",
+// //     activeBlue: "#337ab7",
+// //   };
+// //   const handleSaveAndNext = () => {
+// //     if (currentQuestionIndex < filteredQuestions.length - 1) {
+// //       setCurrentQuestionIndex((prev) => prev + 1);
+// //     } else {
+// //       const currentTabIdx = dynamicTabs.indexOf(activeTab);
+// //       if (currentTabIdx < dynamicTabs.length - 1) {
+// //         setActiveTab(dynamicTabs[currentTabIdx + 1]);
+// //         setCurrentQuestionIndex(0);
+// //       } else {
+// //         handleFinalSubmit();
+// //       }
+// //     }
+// //   };
+
+// //   // Inside SSCExamInterface component:
+
+// //   // 1. Get initial time from examState or default to 60 mins
+// //   // TIMER LOGIC
+// //   const initialMinutes = useMemo(() => {
+// //     const t = topic?.toUpperCase() || "";
+// //     // Search for the minutes pattern we just added
+// //     const match = t.match(/(\d+)\s*MIN/);
+// //     if (match) return parseInt(match[1]);
+
+// //     return 60; // Default fallback
+// //   }, [topic]);
+
+// //   const [timeLeft, setTimeLeft] = useState(initialMinutes * 60);
+
+// //   const hiddenTimeThreshold = useMemo(() => {
+// //     const maxLoss = Math.floor(initialMinutes * 60 * 0.15);
+// //     const minLoss = Math.floor(initialMinutes * 60 * 0.1);
+// //     const loss = Math.floor(Math.random() * (maxLoss - minLoss + 1)) + minLoss;
+
+// //     console.log(`--- TIMER DEBUG: Real Admin Loss is ${loss} seconds ---`);
+// //     return loss;
+// //   }, [initialMinutes]);
+
+// //   useEffect(() => {
+// //     if (timeLeft <= hiddenTimeThreshold) {
+// //       handleFinalSubmit();
+// //       return;
+// //     }
+// //     const timer = setInterval(() => setTimeLeft((p) => p - 1), 1000);
+// //     return () => clearInterval(timer);
+// //   }, [timeLeft, hiddenTimeThreshold]);
+
+// //   const formatTimer = (seconds: number) => {
+// //     const displaySeconds = Math.max(0, seconds - hiddenTimeThreshold);
+// //     const h = Math.floor(displaySeconds / 3600);
+// //     const m = Math.floor((displaySeconds % 3600) / 60);
+// //     const s = displaySeconds % 60;
+// //     return `${String(h).padStart(2, "0")}:${String(m).padStart(
+// //       2,
+// //       "0"
+// //     )}:${String(s).padStart(2, "0")}`;
+// //   };
+
+// //   const [examStarted, setExamStarted] = useState(false);
+// //   useEffect(() => {
+// //     if (filteredQuestions.length > 0 && !examStarted) {
+// //       setExamStarted(true);
+// //       console.log("Timer Unlocked: First question is now visible.");
+// //     }
+// //   }, [filteredQuestions, examStarted]);
+// //   useEffect(() => {
+// //     // 1. Don't start if questions aren't ready
+// //     if (!examStarted) return;
+
+// //     // 2. Auto-submit if time is up
+// //     if (timeLeft <= hiddenTimeThreshold) {
+// //       console.log("⏰ Time up! Auto-submitting...");
+// //       handleFinalSubmit();
+// //       return;
+// //     }
+
+// //     // 3. Normal countdown
+// //     const timer = setInterval(() => {
+// //       setTimeLeft((prev) => prev - 1);
+// //     }, 1000);
+
+// //     return () => clearInterval(timer);
+// //     // Remove examStarted from dependencies to prevent reset
+// //   }, [timeLeft, examStarted, hiddenTimeThreshold]);
+// //   useEffect(() => {
+// //     // --- THE LOCK ---
+// //     if (!examStarted || timeLeft <= hiddenTimeThreshold) {
+// //       if (timeLeft <= hiddenTimeThreshold && examStarted) {
+// //         handleFinalSubmit();
+// //       }
+// //       return;
+// //     }
+
+// //     const timer = setInterval(() => {
+// //       setTimeLeft((prev) => prev - 1);
+// //     }, 1000);
+
+// //     return () => clearInterval(timer);
+// //   }, [timeLeft, examStarted, hiddenTimeThreshold]); // Add length as dependency
+// //   return (
+// //     <div style={containerStyle}>
+// //       <header style={{ ...headerStyle, backgroundColor: colors.topHeader }}>
+// //         <div style={{ fontSize: "14px", fontWeight: "bold" }}>
+// //           {topic?.toUpperCase()}
+// //         </div>
+// //         <div style={timerBoxStyle}>{formatTimer(timeLeft)}</div>
+// //       </header>
+
+// //       <div style={tabContainerStyle}>
+// //         {dynamicTabs.map((tab) => (
+// //           <div
+// //             key={tab}
+// //             onClick={() => {
+// //               setActiveTab(tab);
+// //               setCurrentQuestionIndex(0);
+// //             }}
+// //             style={{
+// //               ...tabStyle,
+// //               backgroundColor: activeTab === tab ? "#fff" : colors.activeBlue,
+// //               color: activeTab === tab ? "#333" : "#fff",
+// //               display: dynamicTabs.length <= 1 ? "none" : "block",
+// //             }}
+// //           >
+// //             {tab}
+// //           </div>
+// //         ))}
+// //       </div>
+
+// //       <div style={{ display: "flex", flex: 1, overflow: "hidden" }}>
+// //         {/* LEFT PANEL */}
+// //         <div style={leftPanelStyle}>
+// //           <div style={sectionLabelStyle}>Section: {activeTab}</div>
+// //           <div style={{ flex: 1, padding: "25px", overflowY: "auto" }}>
+// //             {filteredQuestions.length > 0 && currentQuestion ? (
+// //               <>
+// //                 <div style={{ fontWeight: "bold", marginBottom: "15px" }}>
+// //                   Question No. {currentQuestionIndex + 1}
+// //                 </div>
+// //                 <p
+// //                   style={{
+// //                     fontSize: "16px",
+// //                     fontWeight: "600",
+// //                     marginBottom: "20px",
+// //                   }}
+// //                 >
+// //                   {currentQuestion.question}
+// //                 </p>
+// //                 <div
+// //                   style={{
+// //                     display: "flex",
+// //                     flexDirection: "column",
+// //                     gap: "12px",
+// //                   }}
+// //                 >
+// //                   {currentQuestion.options &&
+// //                   currentQuestion.options.length > 0 ? (
+// //                     currentQuestion.options.map((opt: string, i: number) => (
+// //                       <label key={i} style={optionStyle}>
+// //                         <input
+// //                           type="radio"
+// //                           name={`q-${masterIndex}`}
+// //                           checked={userAnswers[masterIndex] === opt}
+// //                           onChange={() =>
+// //                             dispatch(
+// //                               selectOption({ index: masterIndex, answer: opt })
+// //                             )
+// //                           }
+// //                         />
+// //                         <span style={{ marginLeft: "10px" }}>{opt}</span>
+// //                       </label>
+// //                     ))
+// //                   ) : (
+// //                     <div
+// //                       style={{
+// //                         display: "flex",
+// //                         flexDirection: "column",
+// //                         gap: "10px",
+// //                       }}
+// //                     >
+// //                       <label
+// //                         style={{
+// //                           fontSize: "13px",
+// //                           color: "#666",
+// //                           fontWeight: "600",
+// //                         }}
+// //                       >
+// //                         TYPE YOUR ANSWER:
+// //                       </label>
+// //                       <textarea
+// //                         style={textAreaStyle}
+// //                         value={userAnswers[masterIndex] || ""}
+// //                         onChange={(e) =>
+// //                           dispatch(
+// //                             selectOption({
+// //                               index: masterIndex,
+// //                               answer: e.target.value,
+// //                             })
+// //                           )
+// //                         }
+// //                       />
+// //                     </div>
+// //                   )}
+// //                 </div>
+// //               </>
+// //             ) : (
+// //               <div className="exam-loader-container">
+// //                 <div style={{ textAlign: "center" }}>
+// //                   <p
+// //                     style={{
+// //                       color: "#333",
+// //                       fontSize: "13px",
+// //                       marginBottom: "10px",
+// //                       fontWeight: "bold",
+// //                     }}
+// //                   >
+// //                     SYSTEM CHECK IN PROGRESS...
+// //                   </p>
+
+// //                   {/* The Horizontal Progress Bar (Realistic Gov Exam Style) */}
+// //                   <div className="tcs-progress-bar">
+// //                     <div className="tcs-progress-fill"></div>
+// //                   </div>
+
+// //                   <h3 className="loading-text-bold">
+// //                     Please Wait... Processing Question Paper
+// //                   </h3>
+// //                   <p
+// //                     style={{
+// //                       color: "#666",
+// //                       fontSize: "12px",
+// //                       fontStyle: "italic",
+// //                     }}
+// //                   >
+// //                     Candidate Name: Amita | System: NODE-042
+// //                   </p>
+
+// //                   <div
+// //                     style={{
+// //                       marginTop: "20px",
+// //                       padding: "10px",
+// //                       border: "1px solid #ffcc00",
+// //                       background: "#fff9c4",
+// //                       fontSize: "11px",
+// //                     }}
+// //                   >
+// //                     <strong>IMPORTANT:</strong> Do not refresh the page or click
+// //                     back. The exam will start shortly.
+// //                   </div>
+// //                 </div>
+// //               </div>
+// //             )}
+// //           </div>
+
+// //           <footer style={footerStyle}>
+// //             <div style={{ display: "flex", gap: "10px" }}>
+// //               <button
+// //                 style={actionBtn("#fff", "#333")}
+// //                 onClick={() =>
+// //                   setCurrentQuestionIndex(Math.max(0, currentQuestionIndex - 1))
+// //                 }
+// //                 disabled={
+// //                   currentQuestionIndex === 0 &&
+// //                   dynamicTabs.indexOf(activeTab) === 0
+// //                 }
+// //               >
+// //                 Previous
+// //               </button>
+// //               <button
+// //                 style={actionBtn(colors.purpleMarked, "#fff", "none")}
+// //                 onClick={toggleMarkForReview}
+// //               >
+// //                 {markedForReview.includes(masterIndex)
+// //                   ? "Unmark Review"
+// //                   : "Mark for Review"}
+// //               </button>
+// //             </div>
+// //             <button
+// //               style={actionBtn(
+// //                 currentQuestionIndex === filteredQuestions.length - 1 &&
+// //                   dynamicTabs.indexOf(activeTab) === dynamicTabs.length - 1
+// //                   ? "#286090"
+// //                   : "#5cb85c",
+// //                 "#fff",
+// //                 "none"
+// //               )}
+// //               onClick={handleSaveAndNext}
+// //             >
+// //               {currentQuestionIndex === filteredQuestions.length - 1 &&
+// //               dynamicTabs.indexOf(activeTab) === dynamicTabs.length - 1
+// //                 ? "Submit Test"
+// //                 : "Save & Next"}
+// //             </button>
+// //           </footer>
+// //         </div>
+
+// //         {/* RIGHT PANEL (SIDEBAR) */}
+// //         <aside style={sidebarStyle}>
+// //           <div style={candidateBoxStyle}>
+// //             <img
+// //               src="https://api.dicebear.com/7.x/avataaars/svg?seed=Amita"
+// //               alt="User"
+// //               style={photoStyle}
+// //             />
+// //             <div style={{ fontSize: "13px" }}>
+// //               Candidate: <br />
+// //               <strong>Amita</strong>
+// //             </div>
+// //           </div>
+// //           <div style={paletteTitleStyle}>Question Palette</div>
+// //           <div style={paletteGridStyle}>
+// //             {filteredQuestions.map((q, i) => {
+// //               // Ensure 'q' is declared here
+// //               // Find the original index for color checking in userAnswers
+// //               const originalIndex = questions.findIndex(
+// //                 (masterQ) => masterQ.question === q.question
+// //               );
+
+// //               // COLOR LOGIC
+// //               let bgColor = colors.silverNotVisited;
+// //               const isAnswered = !!userAnswers[originalIndex];
+// //               const isMarked = markedForReview.includes(originalIndex);
+// //               const isVisited = visitedQuestions.includes(originalIndex);
+
+// //               if (isMarked) {
+// //                 bgColor = colors.purpleMarked;
+// //               } else if (isAnswered) {
+// //                 bgColor = colors.greenAns;
+// //               } else if (isVisited && originalIndex !== masterIndex) {
+// //                 bgColor = colors.redNotAns;
+// //               } else if (originalIndex === masterIndex) {
+// //                 bgColor = colors.activeBlue;
+// //               }
+
+// //               return (
+// //                 <div
+// //                   key={i}
+// //                   onClick={() => setCurrentQuestionIndex(i)}
+// //                   style={qShape(bgColor)}
+// //                 >
+// //                   {i + 1}
+// //                 </div>
+// //               );
+// //             })}
+// //           </div>
+// //           <div
+// //             style={{
+// //               padding: "20px",
+// //               marginTop: "auto",
+// //               background: "#fff",
+// //               borderTop: "1px solid #ccc",
+// //             }}
+// //           >
+// //             <button onClick={handleFinalSubmit} style={submitBtnStyle}>
+// //               SUBMIT TEST
+// //             </button>
+// //           </div>
+// //         </aside>
+// //       </div>
+// //     </div>
+// //   );
+// // };
+
+// // const textAreaStyle: React.CSSProperties = {
+// //   width: "100%",
+// //   minHeight: "100px",
+// //   padding: "15px",
+// //   borderRadius: "5px",
+// //   border: "1px solid #ccc",
+// //   fontSize: "16px",
+// //   fontFamily: "inherit",
+// //   outline: "none",
+// //   backgroundColor: "#f9f9f9",
+// //   resize: "vertical",
+// // };
+// // const qShape = (bg: string) => {
+// //   let radius = "2px";
+// //   if (bg === "#7e57c2") radius = "50%"; // Circles for Marked for Review
+
+// //   return {
+// //     width: "35px",
+// //     height: "32px",
+// //     backgroundColor: bg,
+// //     color: bg === "#fff" ? "#333" : "#fff",
+// //     display: "flex",
+// //     alignItems: "center",
+// //     justifyContent: "center",
+// //     fontSize: "12px",
+// //     borderRadius: radius,
+// //     border: bg === "#fff" ? "1px solid #999" : "none",
+// //     cursor: "pointer",
+// //   };
+// // };
+
+// // const actionBtn = (bg: string, color: string, border = "1px solid #ccc") => ({
+// //   backgroundColor: bg,
+// //   color: color,
+// //   border: border,
+// //   padding: "10px 15px",
+// //   fontSize: "13px",
+// //   fontWeight: "bold" as const,
+// //   cursor: "pointer",
+// //   borderRadius: "3px",
+// // });
+
+// // // Layout Styles
+// // const containerStyle: React.CSSProperties = {
+// //   display: "flex",
+// //   flexDirection: "column",
+// //   height: "100vh",
+// //   width: "100vw",
+// //   position: "fixed",
+// //   top: 0,
+// //   left: 0,
+// //   backgroundColor: "#fff",
+// // };
+// // const headerStyle: React.CSSProperties = {
+// //   display: "flex",
+// //   justifyContent: "space-between",
+// //   alignItems: "center",
+// //   color: "white",
+// //   padding: "0 15px",
+// //   height: "45px",
+// // };
+// // const timerBoxStyle: React.CSSProperties = {
+// //   background: "#000",
+// //   color: "#00ff00",
+// //   padding: "4px 10px",
+// //   fontFamily: "monospace",
+// //   fontSize: "18px",
+// //   border: "1px solid #444",
+// // };
+// // const tabContainerStyle: React.CSSProperties = {
+// //   display: "flex",
+// //   background: "#f1f1f1",
+// //   borderBottom: "1px solid #ccc",
+// // };
+// // const tabStyle: React.CSSProperties = {
+// //   padding: "10px 15px",
+// //   fontSize: "12px",
+// //   fontWeight: "bold",
+// //   cursor: "pointer",
+// //   borderRight: "1px solid #ccc",
+// // };
+// // const leftPanelStyle: React.CSSProperties = {
+// //   flex: 1,
+// //   display: "flex",
+// //   flexDirection: "column",
+// //   borderRight: "1px solid #ccc",
+// // };
+// // const sidebarStyle: React.CSSProperties = {
+// //   width: "280px",
+// //   background: "#e5e9ec",
+// //   display: "flex",
+// //   flexDirection: "column",
+// // };
+// // const sectionLabelStyle: React.CSSProperties = {
+// //   padding: "10px 15px",
+// //   background: "#f9f9f9",
+// //   borderBottom: "1px solid #eee",
+// //   fontWeight: "bold",
+// // };
+// // const footerStyle: React.CSSProperties = {
+// //   padding: "15px",
+// //   borderTop: "1px solid #ccc",
+// //   display: "flex",
+// //   justifyContent: "space-between",
+// //   background: "#f5f5f5",
+// // };
+// // const optionStyle = {
+// //   display: "flex",
+// //   alignItems: "center",
+// //   gap: "10px",
+// //   padding: "12px",
+// //   border: "1px solid #e5e7eb",
+// //   borderRadius: "5px",
+// //   cursor: "pointer",
+// //   background: "#fff",
+// // };
+// // const paletteGridStyle: React.CSSProperties = {
+// //   display: "grid",
+// //   gridTemplateColumns: "repeat(4, 1fr)",
+// //   gap: "8px",
+// //   padding: "15px",
+// // };
+// // const paletteTitleStyle: React.CSSProperties = {
+// //   background: "#337ab7",
+// //   color: "#fff",
+// //   padding: "5px 10px",
+// //   fontSize: "12px",
+// // };
+// // const candidateBoxStyle: React.CSSProperties = {
+// //   padding: "15px",
+// //   background: "#fff",
+// //   display: "flex",
+// //   gap: "10px",
+// //   borderBottom: "1px solid #ccc",
+// // };
+// // const photoStyle: React.CSSProperties = {
+// //   width: "70px",
+// //   height: "80px",
+// //   border: "1px solid #999",
+// // };
+// // const submitBtnStyle = {
+// //   width: "100%",
+// //   backgroundColor: "#286090",
+// //   color: "#fff",
+// //   border: "none",
+// //   padding: "10px",
+// //   fontWeight: "bold" as const,
+// //   cursor: "pointer",
+// //   borderRadius: "3px",
+// // };
+
+// // // };
+
+// import React, { useState, useEffect, useMemo } from "react";
+// import { useNavigate } from "react-router-dom";
+// import { useAppSelector, useAppDispatch } from "../../../hook";
+// import { selectOption } from "../../../features/exam/examSlice";
+// import axios from "axios";
+
+// export const SSCExamInterface = () => {
+//   const dispatch = useAppDispatch();
+//   const navigate = useNavigate();
+//   const examState = useAppSelector((state) => state.exam);
+
+//   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+//   const [activeTab, setActiveTab] = useState("");
+//   const [markedForReview, setMarkedForReview] = useState<number[]>([]);
+//   const [visitedQuestions, setVisitedQuestions] = useState<number[]>([]);
+//   const [examStarted, setExamStarted] = useState(false);
+
+//   // 1. MASTER PARSER
+//   const questions = useMemo(() => {
+//     if (!examState?.streamedText) return [];
+//     const text = examState.streamedText;
+//     const startIndex = text.indexOf("[");
+//     if (startIndex === -1) return [];
+
+//     const rawText = text
+//       .substring(startIndex)
+//       .replace(/```json|```/g, "")
+//       .trim();
+
+//     const objectRegex = /\{(?:[^{}]|(?:\{[^{}]*\}))*\}/g;
+//     const matches = rawText.match(objectRegex);
+//     if (!matches) return [];
+
+//     return matches
+//       .map((block) => {
+//         try {
+//           const parsed = JSON.parse(block);
+//           let ops = Array.isArray(parsed.options)
+//             ? parsed.options
+//             : parsed.options
+//             ? Object.values(parsed.options)
+//             : parsed.type === "True/False"
+//             ? ["True", "False"]
+//             : [];
+
+//           return {
+//             ...parsed,
+//             question: parsed.question || "Loading...",
+//             options: ops,
+//             topic: parsed.topic || parsed.subject || "General",
+//           };
+//         } catch (e) {
+//           return null;
+//         }
+//       })
+//       .filter(Boolean);
+//   }, [examState?.streamedText]);
+
+//   const dynamicTabs = useMemo(() => {
+//     const topicStr = examState?.topic || "";
+//     if (topicStr.includes(":")) {
+//       return topicStr
+//         .split(":")[1]
+//         .split(",")
+//         .map((s) => s.trim())
+//         .filter((s) => s !== ""); // 👈 Add this line to prevent empty "ghost" tabs
+//     }
+//     return [
+//       "General Intelligence",
+//       "General Awareness",
+//       "Quantitative Aptitude",
+//       "English",
+//     ];
+//   }, [examState?.topic]);
+
+//   // 3. FILTERED QUESTIONS
+//   const filteredQuestions = useMemo(() => {
+//     if (dynamicTabs.length <= 1) return questions;
+//     const currentTab = activeTab.toLowerCase().trim();
+
+//     return questions.filter((q) => {
+//       const qTopic = (q.topic || "").toLowerCase().trim();
+//       if (
+//         qTopic === currentTab ||
+//         qTopic.includes(currentTab) ||
+//         currentTab.includes(qTopic)
+//       )
+//         return true;
+//       const qText = q.question.toLowerCase();
+//       if (
+//         currentTab.includes("science") ||
+//         currentTab.includes("gk") ||
+//         currentTab.includes("awareness")
+//       ) {
+//         return !(qText.includes("calculate") || /\d+/.test(qText));
+//       }
+//       if (
+//         currentTab.includes("quant") ||
+//         currentTab.includes("math") ||
+//         currentTab.includes("arithmetic")
+//       ) {
+//         return (
+//           qText.includes("calculate") ||
+//           qText.includes("solve") ||
+//           /\d+/.test(qText)
+//         );
+//       }
+//       return false;
+//     });
+//   }, [questions, activeTab, dynamicTabs]);
+
+//   useEffect(() => {
+//     if (dynamicTabs.length > 0 && !activeTab) setActiveTab(dynamicTabs[0]);
+//   }, [dynamicTabs]);
+
+//   // 4. SYNC CHECKS
+//   if (!examState) return null;
+//   const { topic, userAnswers } = examState;
+//   const currentQuestion = filteredQuestions[currentQuestionIndex];
+
+//   const masterIndex = useMemo(() => {
+//     if (!currentQuestion) return -1;
+//     return questions.findIndex((q) => q.question === currentQuestion.question);
+//   }, [currentQuestion, questions]);
+
+//   useEffect(() => {
+//     if (masterIndex !== -1 && !visitedQuestions.includes(masterIndex)) {
+//       setVisitedQuestions((prev) => [...prev, masterIndex]);
+//     }
+//   }, [masterIndex]);
+
+//   // 5. TIMER LOGIC
+//   const initialMinutes = useMemo(() => {
+//     const t = topic?.toUpperCase() || "";
+//     const match = t.match(/(\d+)\s*MIN/);
+//     return match ? parseInt(match[1]) : 60;
+//   }, [topic]);
+
+//   const [timeLeft, setTimeLeft] = useState(initialMinutes * 60);
+//   const hiddenTimeThreshold = useMemo(
+//     () => Math.floor(Math.random() * 6) + 10,
+//     []
+//   );
+
+//   useEffect(() => {
+//     if (filteredQuestions.length > 0 && !examStarted) setExamStarted(true);
+//   }, [filteredQuestions, examStarted]);
+
+//   useEffect(() => {
+//     if (!examStarted) return;
+//     if (timeLeft <= hiddenTimeThreshold) {
+//       handleFinalSubmit();
+//       return;
+//     }
+//     const timer = setInterval(() => setTimeLeft((p) => p - 1), 1000);
+//     return () => clearInterval(timer);
+//   }, [timeLeft, examStarted, hiddenTimeThreshold]);
+
+//   const formatTimer = (seconds: number) => {
+//     const displaySeconds = Math.max(0, seconds - hiddenTimeThreshold);
+//     const h = Math.floor(displaySeconds / 3600);
+//     const m = Math.floor((displaySeconds % 3600) / 60);
+//     const s = displaySeconds % 60;
+//     return `${String(h).padStart(2, "0")}:${String(m).padStart(
+//       2,
+//       "0"
+//     )}:${String(s).padStart(2, "0")}`;
+//   };
+
+//   // 6. FINAL SUBMIT
+//   const handleFinalSubmit = async () => {
+//     const clean = (str: any) =>
+//       String(str || "")
+//         .replace(/^[A-Z]\)\s*/i, "")
+//         .trim()
+//         .toLowerCase();
+//     let correctCount = 0;
+//     questions.forEach((q, index) => {
+//       if (userAnswers[index] && clean(userAnswers[index]) === clean(q.answer))
+//         correctCount++;
+//     });
+
+//     const attemptedCount = Object.keys(userAnswers).length;
+//     const payload = {
+//       user_id: "Amita",
+//       topic: topic || "SSC Mock Test",
+//       total_questions: questions.length,
+//       attempted: attemptedCount,
+//       correct: correctCount,
+//       wrong: attemptedCount - correctCount,
+//       score: parseFloat(
+//         (correctCount * 2 - (attemptedCount - correctCount) * 0.5).toFixed(2)
+//       ),
+//       accuracy: parseFloat(
+//         (attemptedCount > 0
+//           ? (correctCount / attemptedCount) * 100
+//           : 0
+//         ).toFixed(2)
+//       ),
+//       time_spent: initialMinutes * 60 - timeLeft,
+//       sectional_breakdown: {
+//         arithmetic: correctCount,
+//         gk: 0,
+//         reasoning: 0,
+//         english: 0,
+//       },
+//     };
+
+//     try {
+//       await axios.post("http://localhost:8000/api/stats/save-result", payload);
+//       navigate("/SubmittedScreen", {
+//         state: { ...payload, allQuestions: questions, userAnswers },
+//       });
+//     } catch {
+//       navigate("/SubmittedScreen", {
+//         state: { ...payload, allQuestions: questions, userAnswers },
+//       });
+//     }
+//   };
+
+//   const handleSaveAndNext = () => {
+//     const isLastQuestionInTab =
+//       currentQuestionIndex === filteredQuestions.length - 1;
+//     const isLastTab = dynamicTabs.indexOf(activeTab) === dynamicTabs.length - 1;
+
+//     if (!isLastQuestionInTab) {
+//       // 1. Move to next question in current tab
+//       setCurrentQuestionIndex((prev) => prev + 1);
+//     } else if (!isLastTab) {
+//       // 2. Move to first question of the next tab
+//       const currentTabIdx = dynamicTabs.indexOf(activeTab);
+//       setActiveTab(dynamicTabs[currentTabIdx + 1]);
+//       setCurrentQuestionIndex(0);
+//     } else {
+//       // 3. Nowhere left to go -> Hard Submit
+//       console.log("🏁 End of Exam reached. Triggering Final Submit.");
+//       handleFinalSubmit();
+//     }
+//   };
+//   return (
+//     <div style={containerStyle}>
+//       <style>{`
+//             .tcs-progress-bar { width: 300px; height: 14px; background-color: #e0e0e0; border-radius: 2px; overflow: hidden; margin-bottom: 15px; border: 1px solid #ccc; }
+//             .tcs-progress-fill { width: 60%; height: 100%; background: repeating-linear-gradient(45deg, #286090, #286090 10px, #337ab7 10px, #337ab7 20px); animation: progress-move 2s linear infinite; }
+//             @keyframes progress-move { 0% { background-position: 0 0; } 100% { background-position: 40px 0; } }
+//             .loading-text-bold { color: #c9302c; font-weight: bold; font-size: 14px; text-transform: uppercase; }
+//             .exam-loader-container { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; background-color: #f9f9f9; }
+//       `}</style>
+
+//       <header style={{ ...headerStyle, backgroundColor: colors.topHeader }}>
+//         <div style={{ fontSize: "14px", fontWeight: "bold" }}>
+//           {topic?.toUpperCase()}
+//         </div>
+//         <div style={timerBoxStyle}>{formatTimer(timeLeft)}</div>
+//       </header>
+
+//       <div style={tabContainerStyle}>
+//         {dynamicTabs.map((tab) => (
+//           <div
+//             key={tab}
+//             onClick={() => {
+//               setActiveTab(tab);
+//               setCurrentQuestionIndex(0);
+//             }}
+//             style={{
+//               ...tabStyle,
+//               backgroundColor: activeTab === tab ? "#fff" : colors.activeBlue,
+//               color: activeTab === tab ? "#333" : "#fff",
+//             }}
+//           >
+//             {tab}
+//           </div>
+//         ))}
+//       </div>
+
+//       <div style={{ display: "flex", flex: 1, overflow: "hidden" }}>
+//         <div style={leftPanelStyle}>
+//           <div style={sectionLabelStyle}>Section: {activeTab}</div>
+//           <div style={{ flex: 1, padding: "25px", overflowY: "auto" }}>
+//             {filteredQuestions.length > 0 && currentQuestion ? (
+//               <>
+//                 <div style={{ fontWeight: "bold", marginBottom: "15px" }}>
+//                   Question No. {currentQuestionIndex + 1}
+//                 </div>
+//                 <p
+//                   style={{
+//                     fontSize: "16px",
+//                     fontWeight: "600",
+//                     marginBottom: "20px",
+//                   }}
+//                 >
+//                   {currentQuestion.question}
+//                 </p>
+
+//                 {/* --- RENDER SECTION: MCQ vs TEXT INPUT --- */}
+//                 <div
+//                   style={{
+//                     display: "flex",
+//                     flexDirection: "column",
+//                     gap: "12px",
+//                   }}
+//                 >
+//                   {currentQuestion.options &&
+//                   currentQuestion.options.length > 0 ? (
+//                     currentQuestion.options.map((opt: string, i: number) => (
+//                       <label key={i} style={optionStyle}>
+//                         <input
+//                           type="radio"
+//                           name={`q-${masterIndex}`}
+//                           checked={userAnswers[masterIndex] === opt}
+//                           onChange={() =>
+//                             dispatch(
+//                               selectOption({ index: masterIndex, answer: opt })
+//                             )
+//                           }
+//                         />
+//                         <span style={{ marginLeft: "10px" }}>{opt}</span>
+//                       </label>
+//                     ))
+//                   ) : (
+//                     <div style={inputContainerStyle}>
+//                       <p
+//                         style={{
+//                           fontSize: "12px",
+//                           color: "#c9302c",
+//                           fontWeight: "bold",
+//                           marginBottom: "8px",
+//                         }}
+//                       >
+//                         ENTER YOUR ANSWER BELOW:
+//                       </p>
+//                       <input
+//                         type="text"
+//                         placeholder="Type answer here..."
+//                         style={textInputStyle}
+//                         value={userAnswers[masterIndex] || ""}
+//                         onChange={(e) =>
+//                           dispatch(
+//                             selectOption({
+//                               index: masterIndex,
+//                               answer: e.target.value,
+//                             })
+//                           )
+//                         }
+//                         autoFocus
+//                       />
+//                     </div>
+//                   )}
+//                 </div>
+//               </>
+//             ) : (
+//               <div className="exam-loader-container">
+//                 <p
+//                   style={{
+//                     color: "#333",
+//                     fontSize: "13px",
+//                     marginBottom: "10px",
+//                     fontWeight: "bold",
+//                   }}
+//                 >
+//                   SYSTEM CHECK IN PROGRESS...
+//                 </p>
+//                 <div className="tcs-progress-bar">
+//                   <div className="tcs-progress-fill"></div>
+//                 </div>
+//                 <h3 className="loading-text-bold">
+//                   Please Wait... Processing Question Paper
+//                 </h3>
+//               </div>
+//             )}
+//           </div>
+
+//           <footer style={footerStyle}>
+//             <div style={{ display: "flex", gap: "10px" }}>
+//               <button
+//                 style={actionBtn("#fff", "#333")}
+//                 onClick={() =>
+//                   setCurrentQuestionIndex((p) => Math.max(0, p - 1))
+//                 }
+//                 disabled={currentQuestionIndex === 0}
+//               >
+//                 Previous
+//               </button>
+//               <button
+//                 style={actionBtn(colors.purpleMarked, "#fff", "none")}
+//                 onClick={() =>
+//                   setMarkedForReview((p) =>
+//                     p.includes(masterIndex)
+//                       ? p.filter((i) => i !== masterIndex)
+//                       : [...p, masterIndex]
+//                   )
+//                 }
+//               >
+//                 {markedForReview.includes(masterIndex)
+//                   ? "Unmark Review"
+//                   : "Mark for Review"}
+//               </button>
+//             </div>
+//             <button
+//               style={actionBtn(
+//                 // Color logic: Blue for Submit, Green for Next
+//                 currentQuestionIndex === filteredQuestions.length - 1 &&
+//                   dynamicTabs.indexOf(activeTab) === dynamicTabs.length - 1
+//                   ? "#286090"
+//                   : "#5cb85c",
+//                 "#fff",
+//                 "none"
+//               )}
+//               onClick={handleSaveAndNext}
+//             >
+//               {/* Text logic */}
+//               {currentQuestionIndex === filteredQuestions.length - 1 &&
+//               dynamicTabs.indexOf(activeTab) === dynamicTabs.length - 1
+//                 ? "Submit Test"
+//                 : "Save & Next"}
+//             </button>
+//           </footer>
+//         </div>
+
+//         <aside style={sidebarStyle}>
+//           <div style={candidateBoxStyle}>
+//             <img
+//               src="https://api.dicebear.com/7.x/avataaars/svg?seed=Amita"
+//               alt="User"
+//               style={photoStyle}
+//             />
+//             <div style={{ fontSize: "13px" }}>
+//               Candidate: <br />
+//               <strong>Amita</strong>
+//             </div>
+//           </div>
+//           <div style={paletteTitleStyle}>Question Palette</div>
+//           <div style={paletteGridStyle}>
+//             {filteredQuestions.map((q, i) => {
+//               const originalIndex = questions.findIndex(
+//                 (mq) => mq.question === q.question
+//               );
+//               let bgColor = colors.silverNotVisited;
+//               if (markedForReview.includes(originalIndex))
+//                 bgColor = colors.purpleMarked;
+//               else if (userAnswers[originalIndex]) bgColor = colors.greenAns;
+//               else if (
+//                 visitedQuestions.includes(originalIndex) &&
+//                 originalIndex !== masterIndex
+//               )
+//                 bgColor = colors.redNotAns;
+//               else if (originalIndex === masterIndex)
+//                 bgColor = colors.activeBlue;
+
+//               return (
+//                 <div
+//                   key={i}
+//                   onClick={() => setCurrentQuestionIndex(i)}
+//                   style={qShape(bgColor)}
+//                 >
+//                   {i + 1}
+//                 </div>
+//               );
+//             })}
+//           </div>
+//           <div
+//             style={{
+//               padding: "20px",
+//               marginTop: "auto",
+//               background: "#fff",
+//               borderTop: "1px solid #ccc",
+//             }}
+//           >
+//             <button onClick={handleFinalSubmit} style={submitBtnStyle}>
+//               SUBMIT TEST
+//             </button>
+//           </div>
+//         </aside>
+//       </div>
+//     </div>
+//   );
+// };
+// const inputContainerStyle: React.CSSProperties = {
+//   padding: "20px",
+//   backgroundColor: "#fcfcfc",
+//   border: "1px solid #e0e0e0",
+//   borderRadius: "4px",
+//   marginTop: "10px",
+// };
+
+// const textInputStyle: React.CSSProperties = {
+//   width: "100%",
+//   padding: "12px 15px",
+//   fontSize: "18px",
+//   fontWeight: "bold",
+//   fontFamily: "monospace",
+//   border: "2px solid #337ab7",
+//   borderRadius: "4px",
+//   outline: "none",
+//   boxShadow: "inset 0 1px 3px rgba(0,0,0,0.1)",
+//   color: "#333",
+// };
+// // Styles (Condensed for brevity)
+// const colors = {
+//   topHeader: "#286090",
+//   greenAns: "#2d8a2d",
+//   redNotAns: "#c9302c",
+//   purpleMarked: "#7e57c2",
+//   silverNotVisited: "#fff",
+//   activeBlue: "#337ab7",
+// };
+// const containerStyle: React.CSSProperties = {
+//   display: "flex",
+//   flexDirection: "column",
+//   height: "100vh",
+//   width: "100vw",
+//   position: "fixed",
+//   top: 0,
+//   left: 0,
+//   backgroundColor: "#fff",
+// };
+// const headerStyle: React.CSSProperties = {
+//   display: "flex",
+//   justifyContent: "space-between",
+//   alignItems: "center",
+//   color: "white",
+//   padding: "0 15px",
+//   height: "45px",
+// };
+// const timerBoxStyle: React.CSSProperties = {
+//   background: "#000",
+//   color: "#00ff00",
+//   padding: "4px 10px",
+//   fontFamily: "monospace",
+//   fontSize: "18px",
+//   border: "1px solid #444",
+// };
+// const tabContainerStyle: React.CSSProperties = {
+//   display: "flex",
+//   background: "#f1f1f1",
+//   borderBottom: "1px solid #ccc",
+// };
+// const tabStyle: React.CSSProperties = {
+//   padding: "10px 15px",
+//   fontSize: "12px",
+//   fontWeight: "bold",
+//   cursor: "pointer",
+//   borderRight: "1px solid #ccc",
+// };
+// const leftPanelStyle: React.CSSProperties = {
+//   flex: 1,
+//   display: "flex",
+//   flexDirection: "column",
+//   borderRight: "1px solid #ccc",
+// };
+// const sidebarStyle: React.CSSProperties = {
+//   width: "280px",
+//   background: "#e5e9ec",
+//   display: "flex",
+//   flexDirection: "column",
+// };
+// const sectionLabelStyle: React.CSSProperties = {
+//   padding: "10px 15px",
+//   background: "#f9f9f9",
+//   borderBottom: "1px solid #eee",
+//   fontWeight: "bold",
+// };
+// const footerStyle: React.CSSProperties = {
+//   padding: "15px",
+//   borderTop: "1px solid #ccc",
+//   display: "flex",
+//   justifyContent: "space-between",
+//   background: "#f5f5f5",
+// };
+// const optionStyle = {
+//   display: "flex",
+//   alignItems: "center",
+//   gap: "10px",
+//   padding: "12px",
+//   border: "1px solid #e5e7eb",
+//   borderRadius: "5px",
+//   cursor: "pointer",
+//   background: "#fff",
+//   marginBottom: "8px",
+// };
+// const paletteGridStyle: React.CSSProperties = {
+//   display: "grid",
+//   gridTemplateColumns: "repeat(4, 1fr)",
+//   gap: "8px",
+//   padding: "15px",
+// };
+// const paletteTitleStyle: React.CSSProperties = {
+//   background: "#337ab7",
+//   color: "#fff",
+//   padding: "5px 10px",
+//   fontSize: "12px",
+// };
+// const candidateBoxStyle: React.CSSProperties = {
+//   padding: "15px",
+//   background: "#fff",
+//   display: "flex",
+//   gap: "10px",
+//   borderBottom: "1px solid #ccc",
+// };
+// const photoStyle: React.CSSProperties = {
+//   width: "70px",
+//   height: "80px",
+//   border: "1px solid #999",
+// };
+// const submitBtnStyle = {
+//   width: "100%",
+//   backgroundColor: "#286090",
+//   color: "#fff",
+//   border: "none",
+//   padding: "10px",
+//   fontWeight: "bold" as const,
+//   cursor: "pointer",
+//   borderRadius: "3px",
+// };
+// const qShape = (bg: string) => ({
+//   width: "35px",
+//   height: "32px",
+//   backgroundColor: bg,
+//   color: bg === "#fff" ? "#333" : "#fff",
+//   display: "flex",
+//   alignItems: "center",
+//   justifyContent: "center",
+//   fontSize: "12px",
+//   borderRadius: bg === "#7e57c2" ? "50%" : "2px",
+//   border: bg === "#fff" ? "1px solid #999" : "none",
+//   cursor: "pointer",
+// });
+// const actionBtn = (bg: string, color: string, border = "1px solid #ccc") => ({
+//   backgroundColor: bg,
+//   color,
+//   border,
+//   padding: "10px 15px",
+//   fontSize: "13px",
+//   fontWeight: "bold" as const,
+//   cursor: "pointer",
+//   borderRadius: "3px",
+// });

@@ -1,0 +1,47 @@
+
+
+/* Realistic Government Exam Loader */
+.exam-loader-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+}
+
+.tcs-progress-bar {
+  width: 300px;
+  height: 14px;
+  background-color: #e0e0e0;
+  border-radius: 2px;
+  overflow: hidden;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+}
+
+.tcs-progress-fill {
+  width: 50%; /* You can animate this */
+  height: 100%;
+  background: repeating-linear-gradient(
+    45deg,
+    #286090,
+    #286090 10px,
+    #337ab7 10px,
+    #337ab7 20px
+  );
+  animation: progress-move 2s linear infinite;
+}
+
+@keyframes progress-move {
+  0% { background-position: 0 0; }
+  100% { background-position: 40px 0; }
+}
+
+.loading-text-bold {
+  color: #c9302c; /* Classic red/maroon for alerts in gov exams */
+  font-weight: bold;
+  font-size: 14px;
+  text-transform: uppercase;
+}
