@@ -97,9 +97,7 @@ const Login = () => {
               </div>
 
               <div className="form-footer">
-                <button type="button" className="forgot-link">
-                  Forgot Password?
-                </button>
+                <button type="button" className="forgot-link"></button>
                 <button type="submit" className="gov-signin-btn">
                   SIGN IN
                 </button>
