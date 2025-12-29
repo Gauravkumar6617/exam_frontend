@@ -247,7 +247,7 @@ export const SSCExamInterface = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:8000/api/stats/save-result",
+        "https://python-backend-z4tp.onrender.com/api/stats/save-result",
         payload
       );
       console.log("✅ [BACKEND SUCCESS]:", response.data);

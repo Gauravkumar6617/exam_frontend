@@ -63,7 +63,7 @@ const Progress = () => {
     const fetchStats = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:8000/api/stats/dashboard-stats/Amita"
+          "https://python-backend-z4tp.onrender.com/api/stats/dashboard-stats/Amita"
         );
         setData(response.data);
       } catch (error) {
