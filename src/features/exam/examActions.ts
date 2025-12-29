@@ -11,18 +11,21 @@ export const startExamStream =
     dispatch(startGeneration(topic));
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/exam/generate", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          topic,
-          difficulty,
-          total_questions: count,
-          q_types: qTypes,
-        }),
-      });
+      const response = await fetch(
+        "https://python-backend-z4tp.onrender.com/exam/generate",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            topic,
+            difficulty,
+            total_questions: count,
+            q_types: qTypes,
+          }),
+        }
+      );
 
       console.log("📥 Server Response Status:", response.status);
 
@@ -84,11 +87,11 @@ export const startPDFExamStream =
       formData.append("q_types", JSON.stringify(qTypes));
 
       console.log(
-        "🚀 Sending Request to: http://127.0.0.1:8000/exam/generate-from-pdf"
+        "🚀 Sending Request to: https://python-backend-z4tp.onrender.com/exam/generate-from-pdf"
       );
 
       const response = await fetch(
-        "http://127.0.0.1:8000/exam/generate-from-pdf",
+        "https://python-backend-z4tp.onrender.com/exam/generate-from-pdf",
         {
           method: "POST",
           body: formData,
@@ -157,7 +160,7 @@ export const startWebExamStream =
     try {
       console.log("🚀 Sending POST request to FastAPI...");
       const response = await fetch(
-        "http://127.0.0.1:8000/exam/generate-from-web",
+        "https://python-backend-z4tp.onrender.com/exam/generate-from-web",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -222,7 +225,7 @@ export const startPYQExtractionStream =
 
     try {
       const response = await fetch(
-        "http://localhost:8000/exam/api/extract-pyq",
+        "https://python-backend-z4tp.onrender.com/exam/api/extract-pyq",
         {
           method: "POST",
           body: formData,
