@@ -513,35 +513,47 @@ export const SSCExamInterface = () => {
               <strong>Amita</strong>
             </div>
           </div>
+
           <div style={paletteTitleStyle}>Question Palette</div>
-          <div style={paletteGridStyle}>
-            {questions.map((_, i) => {
-              let bgColor = colors.silverNotVisited;
-              if (markedForReview.includes(i)) bgColor = colors.purpleMarked;
-              else if (userAnswers[i]) bgColor = colors.greenAns;
-              else if (
-                visitedQuestions.includes(i) &&
-                i !== currentQuestionIndex
-              )
-                bgColor = colors.redNotAns;
-              else if (i === currentQuestionIndex) bgColor = colors.activeBlue;
-              return (
-                <div
-                  key={i}
-                  onClick={() => setCurrentQuestionIndex(i)}
-                  style={qShape(bgColor)}
-                >
-                  {i + 1}
-                </div>
-              );
-            })}
+
+          {/* NEW: Scrollable container for the grid */}
+          <div
+            style={{
+              flex: 1,
+              overflowY: "auto",
+              borderBottom: "1px solid #ccc",
+            }}
+          >
+            <div style={paletteGridStyle}>
+              {questions.map((_, i) => {
+                let bgColor = colors.silverNotVisited;
+                if (markedForReview.includes(i)) bgColor = colors.purpleMarked;
+                else if (userAnswers[i]) bgColor = colors.greenAns;
+                else if (
+                  visitedQuestions.includes(i) &&
+                  i !== currentQuestionIndex
+                )
+                  bgColor = colors.redNotAns;
+                else if (i === currentQuestionIndex)
+                  bgColor = colors.activeBlue;
+
+                return (
+                  <div
+                    key={i}
+                    onClick={() => setCurrentQuestionIndex(i)}
+                    style={qShape(bgColor)}
+                  >
+                    {i + 1}
+                  </div>
+                );
+              })}
+            </div>
           </div>
+
           <div
             style={{
               padding: "20px",
-              marginTop: "auto",
               background: "#fff",
-              borderTop: "1px solid #ccc",
             }}
           >
             <button onClick={handleFinalSubmit} style={submitBtnStyle}>
